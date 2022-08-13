@@ -1,4 +1,4 @@
-# Range-Trading-Trading-Team-Project-Semester-1-2022
+# Range-Trading-Trading-Team-Project-Semester-2-2022
 
 Repository for the Trading Team Project based on Range Trading for QFin Semester 2 2022
 
