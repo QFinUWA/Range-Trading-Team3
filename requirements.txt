@@ -4,3 +4,4 @@ pandas
 requests
 datetime
 matplotlib
+tqdm
