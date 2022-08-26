@@ -4,7 +4,6 @@ import numpy as np
 import warnings
 import time
 import statistics
-from tqdm import tqdm
 
 # Local imorts
 from backtester import account, help_funcs
@@ -47,7 +46,7 @@ class backtest():
         starttime = time.time()
         
         # for (index,date,low,high,open,close,volume) in self.data.itertuples(): # Itertuples is faster than iterrows
-        for index, today in tqdm(self.data.iterrows(), total=len([_ for _ in self.data.iterrows()])):
+        for index, today in self.data.iterrows():
             
             # equity = self.account.total_value(close)
             date = today["date"]
