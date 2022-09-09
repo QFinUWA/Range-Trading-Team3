@@ -26,6 +26,7 @@ class backtest():
             msg = "Missing {0} column(s), dataframe must be HLOCV+".format(list(missing))
             warnings.warn(msg)
 
+
         self.data = data
 
     def start(self, initial_capital, logic):
