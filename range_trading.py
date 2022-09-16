@@ -23,10 +23,11 @@ logic() function:
 '''
 
 
+
+
     # lookback is going to be a pandas dataframe e.g. 'Open':[100, 87, 69, 11]
                                                     # 'Volume':[23, 45, 76, 93]
     
-
 def logic(account, lookback): # Logic function to be used for each time interval in backtest 
 
     last_index = len(lookback)-1
