@@ -1,10 +1,7 @@
 import pandas as pd
-import time
-import multiprocessing as mp
 
 # local imports
-from backtester import engine, tester
-from backtester import API_Interface as api
+from backtester import tester
 
 training_period = 20 # How far the rolling average takes into calculation
 standard_deviations = 3.5 # Number of Standard Deviations from the mean the Bollinger Bands sit
@@ -21,7 +18,8 @@ logic() function:
 
 def logic(account, lookback): # Logic function to be used for each time interval in backtest 
     
-    today = len(lookback)-1
+    today = len(lookback)-1 # today is the last index
+
     if(today > training_period): # If the lookback is long enough to calculate the Bollinger Bands
 
         if(lookback['close'][today] < lookback['BOLD'][today]): # If current price is below lower Bollinger Band, enter a long position
