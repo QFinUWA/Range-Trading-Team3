@@ -1,0 +1,4 @@
+Things to consider:
+    * How much do we put into each position?
+    * Trade off between speed and accuracy
+    

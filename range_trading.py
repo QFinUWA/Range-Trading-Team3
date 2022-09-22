@@ -8,7 +8,7 @@ from backtester import engine, tester
 from backtester import API_Interface as api
 
 training_period = 20 # How far the rolling average takes into calculation
-standard_deviations = 2 # Number of Standard Deviations from the mean the Bollinger Bands sit
+standard_deviations = 3.5 # Number of Standard Deviations from the mean the Bollinger Bands sit
 
 interval = 14
 
@@ -23,29 +23,52 @@ logic() function:
 '''
 
 
+
+
     # lookback is going to be a pandas dataframe e.g. 'Open':[100, 87, 69, 11]
                                                     # 'Volume':[23, 45, 76, 93]
     
-
 def logic(account, lookback): # Logic function to be used for each time interval in backtest 
 
     last_index = len(lookback)-1
 
     if(last_index <= training_period): # If the lookback is long enough to calculate the Bollinger Bands
-        return 
+        return   # A coding style that is the same as tabbed if statement.
+    ADX = lookback['ADX'+str(interval)][last_index]
 
+    # when ADX is >= 20, we don't trade
+    if ADX >= 20:
+        return
+    
+    # when ADX is < 20, its sideways market, use boll bands strat
     close_price = lookback['close'][last_index]
     if(close_price < lookback['BOLD'][last_index]): # If current price is below lower Bollinger Band, enter a long position
         for position in account.positions: # Close all current positions
             account.close_position(position, 1, close_price)
         if(account.buying_power > 0):
-            account.enter_position('long', account.buying_power, close_price) # Enter a long position
+            account.enter_position('long', account.buying_power, close_price) # Enter a long position (enter full position)
 
     if(close_price > lookback['BOLU'][last_index]): # If today's price is above the upper Bollinger Band, enter a short position
         for position in account.positions: # Close all current positions
             account.close_position(position, 1, close_price)
         if(account.buying_power > 0):
                 account.enter_position('short', account.buying_power, close_price) # Enter a short position
+    
+    # today = len(lookback)-1 # today is the last index
+
+    # if(today > training_period): # If the lookback is long enough to calculate the Bollinger Bands
+
+    #     if(lookback['close'][today] < lookback['BOLD'][today]): # If current price is below lower Bollinger Band, enter a long position
+    #         for position in account.positions: # Close all current positions
+    #             account.close_position(position, 1, lookback['close'][today])
+    #         if(account.buying_power > 0):
+    #             account.enter_position('long', account.buying_power, lookback['close'][today]) # Enter a long position
+
+    #     if(lookback['close'][today] > lookback['BOLU'][today]): # If today's price is above the upper Bollinger Band, enter a short position
+    #         for position in account.positions: # Close all current positions
+    #             account.close_position(position, 1, lookback['close'][today])
+    #         if(account.buying_power > 0):
+    #             account.enter_position('short', account.buying_power, lookback['close'][today]) # Enter a short position
 
 '''
 preprocess_data() function:
@@ -67,11 +90,11 @@ def preprocess_data(list_of_stocks):
         df['BOLU'] = df['MA-TP'] + standard_deviations*df['std'] # Calculate Upper Bollinger Band
         df['BOLD'] = df['MA-TP'] - standard_deviations*df['std'] # Calculate Lower Bollinger Band
         df['sum']=df['close'].cumsum()
+
         df['-DM'] = df['low'].shift(1) - df['low'] # Directional Movement : previous low minus current low
         df['+DM'] = df['high'] - df['high'].shift(1) # Directional Movement : current high minus previous high 
         df['+DM'] = np.where((df['+DM'] > df['-DM']) & (df['+DM']>0), df['+DM'], 0.0)
         df['-DM'] = np.where((df['-DM'] > df['+DM']) & (df['-DM']>0), df['-DM'], 0.0)
-
         df['TR_TMP1'] = df['high'] - df['low']
         df['TR_TMP2'] = np.abs(df['high'] - df['close'].shift(1))
         df['TR_TMP3'] = np.abs(df['low'] - df['close'].shift(1))
@@ -84,24 +107,25 @@ def preprocess_data(list_of_stocks):
         df['DI'+str(interval)+'-'] = abs(df['+DI'+str(interval)] - df['-DI'+str(interval)])
         df['DI'+str(interval)] = df['+DI'+str(interval)] + df['-DI'+str(interval)]
         df['DX'] = (df['DI'+str(interval)+'-'] / df['DI'+str(interval)])*100
-        df['ADX'] = df['DX'].rolling(interval).mean()
-        df['ADX'+str(interval)] =   df['ADX'+str(interval)].fillna(df['ADX'+str(interval)].mean())
+        df['ADX'+str(interval)] = df['DX'].rolling(interval).mean()
+
+        
+        df['ADX'+str(interval)] =  df['ADX'+str(interval)].fillna(df['ADX'+str(interval)].mean()) 
         del df['TR_TMP1'], df['TR_TMP2'], df['TR_TMP3'], df['TR'], df['TR'+str(interval)]
         del df['+DMI'+str(interval)], df['DI'+str(interval)+'-']
-        del df['DI'+str(interval)], df['-DMI'+str(interval)]
+        del df['DI'+str(interval)], df['-DMI'+str(interval)]       # interval is 14 (ADX14)
         del df['+DI'+str(interval)], df['-DI'+str(interval)]
         del df['DX']
-
-        df.to_csv("data/" + stock + "_Processed_test.csv", index=False) # Save to CSV
+        df.to_csv("data/" + stock + "_Processed.csv", index=False) # Save to CSV
         list_of_stocks_processed.append(stock + "_Processed")
     return list_of_stocks_processed
 
 
 if __name__ == "__main__":
-    list_of_stocks = ["TSLA_2020-03-01_2022-01-20_1min"] 
+    list_of_stocks = ["TSLA_2020-03-09_2022-01-28_15min"] 
     # list_of_stocks = ["TSLA_2020-03-09_2022-01-28_15min", "AAPL_2020-03-24_2022-02-12_15min"] # List of stock data csv's to be tested, located in "data/" folder 
     list_of_stocks_proccessed = preprocess_data(list_of_stocks) # Preprocess the data
-
+    # list_of_stocks_proccessed = ["TSLA_2020-03-01_2022-01-20_1min_Processed"]
     results = tester.test_array(list_of_stocks_proccessed, logic, chart=True) # Run backtest on list of stocks using the logic function
 # passing logic function as parameter. 
     print("training period " + str(training_period))
@@ -109,8 +133,3 @@ if __name__ == "__main__":
     df = pd.DataFrame(list(results), columns=["Buy and Hold","Strategy","Longs","Sells","Shorts","Covers","Stdev_Strategy","Stdev_Hold","Stock"]) # Create dataframe of results
     df.to_csv("results/Test_Results.csv", index=False) # Save results to csv
 
-
-
- 
- 
-  
