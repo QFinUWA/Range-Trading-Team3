@@ -1,4 +1,14 @@
 Things to consider:
     * How much do we put into each position?
     * Trade off between speed and accuracy
+
+Indicators:
+    * Average Directional Index:
+        - https://www.investopedia.com/terms/a/adx.asp
+        - https://medium.com/codex/algorithmic-trading-with-average-directional-index-in-python-2b5a20ecf06a
+        - The trend has strength when ADX is above 25; the trend is weak or the price is trendless when ADX is below 20, according to Wilder.
     
+    * Relative Strength index:
+        - https://www.investopedia.com/terms/r/rsi.asp#:~:text=The%20relative%20strength%20index%20(RSI)%20is%20a%20momentum%20indicator%20used,the%20price%20of%20that%20security.&text=The%20RSI%20can%20do%20more%20than%20point%20to%20overbought%20and%20oversold%20securities
+        - Isaac stole code from Aria
+        - Momentum indicator, uses speed and magnitude of recent price changes to evaluate overvalued and undervalued conditions of security

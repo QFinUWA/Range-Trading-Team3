@@ -1,0 +1,4 @@
+Chnages:
+    * Test on more data
+    * RSI and/OR
+    * Calculate range from ADX? Make range?
