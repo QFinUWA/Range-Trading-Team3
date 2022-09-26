@@ -12,3 +12,6 @@ Indicators:
         - https://www.investopedia.com/terms/r/rsi.asp#:~:text=The%20relative%20strength%20index%20(RSI)%20is%20a%20momentum%20indicator%20used,the%20price%20of%20that%20security.&text=The%20RSI%20can%20do%20more%20than%20point%20to%20overbought%20and%20oversold%20securities
         - Isaac stole code from Aria
         - Momentum indicator, uses speed and magnitude of recent price changes to evaluate overvalued and undervalued conditions of security
+        - When first implemented, used it to check that when price fell below BOLL BAND, stock wasn't overvalued (overbought)
+    
+    
