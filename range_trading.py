@@ -41,6 +41,7 @@ def logic(account, lookback): # Logic function to be used for each time interval
 
     # when ADX is >= 20, we don't trade
     if ADX >= 20:
+        
         return
     
     # when ADX is < 20, its sideways market, use boll bands strat
@@ -48,7 +49,7 @@ def logic(account, lookback): # Logic function to be used for each time interval
     if(close_price < lookback['BOLD'][last_index]): # If current price is below lower Bollinger Band, enter a long position
         
         # if RSI > 70 - don't buy (Overvalued)
-        if RSI > RSI_BOUNDS["upper"]:
+        if RSI > RSI_BOUNDS["lower"]:
             return
 
         for position in account.positions: # Close all current positions
@@ -59,7 +60,7 @@ def logic(account, lookback): # Logic function to be used for each time interval
     if(close_price > lookback['BOLU'][last_index]): # If today's price is above the upper Bollinger Band, enter a short position
         
         # if RSI < 30 - don't sell (Undervalued)
-        if RSI < RSI_BOUNDS["lower"]:
+        if RSI < RSI_BOUNDS["upper"]:
             return
         
         for position in account.positions: # Close all current positions
@@ -156,17 +157,17 @@ def preprocess_data(list_of_stocks):
 
 if __name__ == "__main__":
     
-    REMAKE_DATA = True
+    REMAKE_DATA = False
     # remake *_Processed.csv for all stocks in "stocks_to_process"
     if REMAKE_DATA:
-        stocks_to_process = ["TSLA_2020-03-09_2022-01-28_15min", "AAPL_2020-03-24_2022-02-12_15min"]
+        stocks_to_process = ["WMT_2020-10-05_2022-08-26_15min", "NDAQ_2020-10-05_2022-08-26_15min"]
         list_of_stocks = preprocess_data(
             stocks_to_process)  # Preprocess the data
     # resuse cvs from "list_of_stocks"
     else:
         # List of stock data csv's to be tested, located in "data/" folder
         #"TSLA_2020-03-09_2022-01-28_15min_Processed"
-        list_of_stocks = ["TSLA_2020-03-09_2022-01-28_15min_Processed", "AAPL_2020-03-24_2022-02-12_15min_Processed"]
+        list_of_stocks = ["WMT_2020-10-05_2022-08-26_15min_Processed", "NDAQ_2020-10-05_2022-08-26_15min_Processed"]
     results = tester.test_array(list_of_stocks, logic, chart=True) # Run backtest on list of stocks using the logic function
 # passing logic function as parameter. 
     print("training period " + str(TRAINING_PERIOD))
