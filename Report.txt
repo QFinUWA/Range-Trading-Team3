@@ -1,6 +1,7 @@
 Things to consider:
     * How much do we put into each position?
     * Trade off between speed and accuracy
+    * CLOSING POSITIONS WHEN ADX>=25
 
 Indicators:
     * Average Directional Index:
@@ -13,5 +14,55 @@ Indicators:
         - Isaac stole code from Aria
         - Momentum indicator, uses speed and magnitude of recent price changes to evaluate overvalued and undervalued conditions of security
         - When first implemented, used it to check that when price fell below BOLL BAND, stock wasn't overvalued (overbought)
-    
+
+STUCTURE
+
+Introduction
+- define strategy 
+- define range trading
+- all or nothing by definition
+    * maybe adjust amount of $$$ invested based on vol (risk tolerance)
+(150)
+
+RSI
+- explain
+- hyperpareters
+- implementation
+    mention we initally used it as a check before buying
+(100)
+
+Bollinger bands
+- hyperpareters
+- implementation
+
+(100)
+
+ADX
+- define
+- hyperpareters
+- explain
+    same interval and bollinger bands
+    ADX > 25
+    20 < ADX < 25
+    10 < ADX < 20
+    ADX < 10
+- graph piecewise function in desmos
+
+- implementation
+(100)
+
+Results:
+- Overfitting
+- Must be sideways market 
+(150)
+
+Discussion
+- Must be sideways market recap
+- Bias of picking a sideways market
+- Overfitting recap
+- Hyperparemeters need to be finetuned
+    - recap our hyperpareters
+- optimal trading strategy to use outside/inside ADX bounds?
+
+(350)
     

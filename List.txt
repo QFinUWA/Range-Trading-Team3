@@ -1,5 +1,6 @@
-Chnages:
+Changes:
     * Test on more data
     * RSI and/OR
     * Calculate range from ADX? Make range?
         - If as ADX increases > 20 we increase our st.dev as we are less confident in the sideways market
+    * Check how we use RSI, as we aren't making many trades atm

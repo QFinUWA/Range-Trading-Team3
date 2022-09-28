@@ -42,9 +42,8 @@ def logic(account, lookback): # Logic function to be used for each time interval
 
     RSI = lookback['RSI'][last_index]
 
-    # when ADX is >= 20, we don't trade
-    if ADX >= 25:
-        return
+    close_price = lookback['close'][last_index]
+
 
     if ADX >= 20 and ADX < 25:
         coeff = STD_MULTIPLIER*STD_DV_CONST
@@ -57,14 +56,24 @@ def logic(account, lookback): # Logic function to be used for each time interval
     BOLU = lookback['MA-TP'][last_index] + coeff*lookback['std'][last_index] # Calculate Upper Bollinger Band
     BOLD = lookback['MA-TP'][last_index] - coeff*lookback['std'][last_index] # Calculate Lower Bollinger Band
 
+    # when ADX is >= 25, only close positions
+    if ADX >= 25:
+        if(close_price < BOLD):
+            for position in account.positions: # Close all current positions
+                if position.type_ == 'short':
+                    account.close_position(position, 1, close_price)
 
-    # when ADX is < 20, its sideways market, use boll bands strat
-    close_price = lookback['close'][last_index]
+        if(close_price > BOLU):
+            for position in account.positions: # Close all current positions
+                if position.type_ == 'long':
+                    account.close_position(position, 1, close_price)
+        return
+
     if(close_price < BOLD): # If current price is below lower Bollinger Band, enter a long position
         
         # if RSI > 70 - don't buy (Overvalued)
-        if RSI > RSI_BOUNDS["lower"]:
-            return
+        # if RSI > RSI_BOUNDS["lower"]:
+        #     return
 
         for position in account.positions: # Close all current positions
             account.close_position(position, 1, close_price)
@@ -74,8 +83,8 @@ def logic(account, lookback): # Logic function to be used for each time interval
     if(close_price > BOLU): # If today's price is above the upper Bollinger Band, enter a short position
         
         # if RSI < 30 - don't sell (Undervalued)
-        if RSI < RSI_BOUNDS["upper"]:
-            return
+        # if RSI < RSI_BOUNDS["upper"]:
+        #     return
         
         for position in account.positions: # Close all current positions
             account.close_position(position, 1, close_price)
