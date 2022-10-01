@@ -45,12 +45,13 @@ def logic(account, lookback): # Logic function to be used for each time interval
     close_price = lookback['close'][last_index]
 
 
-    if ADX >= 20 and ADX < 25:
-        coeff = STD_MULTIPLIER*STD_DV_CONST
-    elif ADX > 10 and ADX < 20:
+    #if ADX >= 20 and ADX < 25:
+    #    coeff = STD_MULTIPLIER*STD_DV_CONST
+    coeff = 1*STD_DV_CONST
+    if ADX > 10 and ADX < 25:
         coeff = 1*STD_DV_CONST 
     else:
-        coeff = 0.5*STD_DV_CONST
+        coeff = 0.8*STD_DV_CONST
 
     
     BOLU = lookback['MA-TP'][last_index] + coeff*lookback['std'][last_index] # Calculate Upper Bollinger Band
@@ -58,22 +59,17 @@ def logic(account, lookback): # Logic function to be used for each time interval
 
     # when ADX is >= 25, only close positions
     if ADX >= 25:
-        if(close_price < BOLD):
+        if(close_price < BOLD) or (close_price > BOLU):
             for position in account.positions: # Close all current positions
-                if position.type_ == 'short':
-                    account.close_position(position, 1, close_price)
-
-        if(close_price > BOLU):
-            for position in account.positions: # Close all current positions
-                if position.type_ == 'long':
-                    account.close_position(position, 1, close_price)
+                account.close_position(position, 1, close_price)
         return
+
 
     if(close_price < BOLD): # If current price is below lower Bollinger Band, enter a long position
         
-        # if RSI > 70 - don't buy (Overvalued)
-        # if RSI > RSI_BOUNDS["lower"]:
-        #     return
+        # if RSI < 30 (undervalued) and if price is under BOLD, then buy
+        if RSI > RSI_BOUNDS["lower"]:
+            return
 
         for position in account.positions: # Close all current positions
             account.close_position(position, 1, close_price)
@@ -82,9 +78,9 @@ def logic(account, lookback): # Logic function to be used for each time interval
 
     if(close_price > BOLU): # If today's price is above the upper Bollinger Band, enter a short position
         
-        # if RSI < 30 - don't sell (Undervalued)
-        # if RSI < RSI_BOUNDS["upper"]:
-        #     return
+        # if RSI > 70 (overvalued) and price moves above Upper bol band then short
+        if RSI < RSI_BOUNDS["upper"]:
+            return
         
         for position in account.positions: # Close all current positions
             account.close_position(position, 1, close_price)
