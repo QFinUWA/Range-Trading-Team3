@@ -44,11 +44,15 @@ def logic(account, lookback): # Logic function to be used for each time interval
 
     close_price = lookback['close'][last_index]
 
+    DI_POSITIVE = lookback['+DI'+str(INTERVAL)][last_index]
+    DI_NEGATIVE = lookback['-DI'+str(INTERVAL)][last_index]
+
 
     #if ADX >= 20 and ADX < 25:
     #    coeff = STD_MULTIPLIER*STD_DV_CONST
-    coeff = 1*STD_DV_CONST
-    if ADX > 10 and ADX < 25:
+    if ADX>= 25:
+        coeff = 1.2*STD_DV_CONST
+    elif ADX > 10 and ADX < 25:
         coeff = 1*STD_DV_CONST 
     else:
         coeff = 0.8*STD_DV_CONST
@@ -59,9 +63,16 @@ def logic(account, lookback): # Logic function to be used for each time interval
 
     # when ADX is >= 25, only close positions
     if ADX >= 25:
-        if(close_price < BOLD) or (close_price > BOLU):
-            for position in account.positions: # Close all current positions
-                account.close_position(position, 1, close_price)
+        # If it trends below BOLD, and is headed downwards, close long positions
+        if(close_price < BOLD and DI_POSITIVE < DI_NEGATIVE):
+            for position in account.positions: 
+                if position.type_ == 'long':
+                    account.close_position(position, 1, close_price)
+
+        if (close_price > BOLU and DI_POSITIVE > DI_NEGATIVE):
+            for position in account.positions: 
+                if position.type_ == 'short':
+                    account.close_position(position, 1, close_price)
         return
 
 
@@ -145,7 +156,7 @@ def preprocess_data(list_of_stocks):
         del df['TR_TMP1'], df['TR_TMP2'], df['TR_TMP3'], df['TR'], df['TR'+str(INTERVAL)]
         del df['+DMI'+str(INTERVAL)], df['DI'+str(INTERVAL)+'-']
         del df['DI'+str(INTERVAL)], df['-DMI'+str(INTERVAL)]       # interval is 14 (ADX14)
-        del df['+DI'+str(INTERVAL)], df['-DI'+str(INTERVAL)]
+        #del df['+DI'+str(INTERVAL)], df['-DI'+str(INTERVAL)]
         del df['DX']
 
         # RSI
@@ -159,7 +170,7 @@ def preprocess_data(list_of_stocks):
 
 if __name__ == "__main__":
     
-    REMAKE_DATA = False
+    REMAKE_DATA = True
     # remake *_Processed.csv for all stocks in "stocks_to_process"
     if REMAKE_DATA:
         stocks_to_process = ["WMT_2020-10-05_2022-08-26_15min", "NDAQ_2020-10-05_2022-08-26_15min"]
