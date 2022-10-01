@@ -51,7 +51,7 @@ def logic(account, lookback): # Logic function to be used for each time interval
     #if ADX >= 20 and ADX < 25:
     #    coeff = STD_MULTIPLIER*STD_DV_CONST
     if ADX>= 25:
-        coeff = 1.2*STD_DV_CONST
+        coeff = 1*STD_DV_CONST
     elif ADX > 10 and ADX < 25:
         coeff = 1*STD_DV_CONST 
     else:
@@ -64,15 +64,26 @@ def logic(account, lookback): # Logic function to be used for each time interval
     # when ADX is >= 25, only close positions
     if ADX >= 25:
         # If it trends below BOLD, and is headed downwards, close long positions
-        if(close_price < BOLD and DI_POSITIVE < DI_NEGATIVE):
-            for position in account.positions: 
-                if position.type_ == 'long':
-                    account.close_position(position, 1, close_price)
+        if(close_price < BOLD): 
+            if DI_POSITIVE < DI_NEGATIVE:
+                for position in account.positions: 
+                    if position.type_ == 'long':
+                        account.close_position(position, 1, close_price)
+            else:
+                for position in account.positions: 
+                    if position.type_ == 'short':
+                        account.close_position(position, 1, close_price)
 
-        if (close_price > BOLU and DI_POSITIVE > DI_NEGATIVE):
-            for position in account.positions: 
-                if position.type_ == 'short':
-                    account.close_position(position, 1, close_price)
+
+        if (close_price > BOLU): 
+            if DI_POSITIVE > DI_NEGATIVE:
+                for position in account.positions: 
+                    if position.type_ == 'short':
+                        account.close_position(position, 1, close_price)
+            else:
+                for position in account.positions: 
+                    if position.type_ == 'long':
+                        account.close_position(position, 1, close_price)
         return
 
 
@@ -173,7 +184,7 @@ if __name__ == "__main__":
     REMAKE_DATA = True
     # remake *_Processed.csv for all stocks in "stocks_to_process"
     if REMAKE_DATA:
-        stocks_to_process = ["WMT_2020-10-05_2022-08-26_15min", "NDAQ_2020-10-05_2022-08-26_15min"]
+        stocks_to_process = ["WMT_2020-10-05_2022-08-26_15min", "NDAQ_2020-10-05_2022-08-26_15min"] + ["TSLA_2020-03-09_2022-01-28_15min", "AAPL_2020-03-24_2022-02-12_15min"]
         list_of_stocks = preprocess_data(
             stocks_to_process)  # Preprocess the data
     # resuse cvs from "list_of_stocks"
